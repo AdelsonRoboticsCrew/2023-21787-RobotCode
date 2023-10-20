@@ -61,7 +61,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive By Encoder", group="Robot")
+@Autonomous(name="Basic Autonomous", group="Robot")
 //@Disabled
 public class BasicAutonomous extends LinearOpMode {
 
@@ -126,6 +126,7 @@ public class BasicAutonomous extends LinearOpMode {
         waitForStart();
 
         // Step through each leg of the path,
+        encoderDrive(DRIVE_SPEED, 5, 5, 5, 5, 3);
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
 
         telemetry.addData("Path", "Complete");
