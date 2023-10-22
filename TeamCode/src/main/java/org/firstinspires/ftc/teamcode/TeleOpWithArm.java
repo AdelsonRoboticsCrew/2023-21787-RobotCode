@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,9 +49,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic Tele-Op", group="Iterative OpMode")
+@TeleOp(name="Tele-Op w/ Arm", group="Iterative OpMode")
 //@Disabled
-public class BasicTeleOp extends OpMode
+public class TeleOpWithArm extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -60,6 +59,10 @@ public class BasicTeleOp extends OpMode
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private DcMotor armLeft = null;
+    private DcMotor armRight = null;
+    private boolean clawOpen = false;
+    private boolean lastX;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -75,6 +78,8 @@ public class BasicTeleOp extends OpMode
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        armLeft = hardwareMap.get(DcMotor.class, "arm_left");
+        armRight = hardwareMap.get(DcMotor.class, "arm_right");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -83,6 +88,17 @@ public class BasicTeleOp extends OpMode
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        armLeft.setDirection(DcMotor.Direction.FORWARD);
+        armRight.setDirection(DcMotor.Direction.FORWARD);
+
+        armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        armLeft.setTargetPosition(0);
+        armRight.setTargetPosition(0);
+
+        armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -114,6 +130,7 @@ public class BasicTeleOp extends OpMode
         double rightFrontPower;
         double rightBackPower;
 
+
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double drive = -gamepad1.left_stick_y;
@@ -123,6 +140,7 @@ public class BasicTeleOp extends OpMode
         leftBackPower    = drive + turn - strafe;
         rightFrontPower   = drive - turn - strafe;
         rightBackPower   = drive - turn + strafe;
+
 
         double divisor = Math.max(Math.max(leftFrontPower, leftBackPower), Math.max(rightFrontPower, rightBackPower));
         if(divisor >= 0.7){
@@ -137,9 +155,35 @@ public class BasicTeleOp extends OpMode
         rightFrontDrive.setPower(rightFrontPower);
         rightBackDrive.setPower(rightBackPower);
 
+
+        if(gamepad1.x && !lastX){
+            clawOpen = !clawOpen;
+        }
+
+        if(clawOpen){
+            telemetry.addLine("claw debug");
+        }
+
+        int increment = 2;
+        if(gamepad1.dpad_up){
+            armLeft.setPower(0.2);
+            armLeft.setTargetPosition(armLeft.getTargetPosition()-increment);
+            armRight.setPower(0.2);
+            armRight.setTargetPosition(armRight.getTargetPosition()-increment);
+            telemetry.addLine("debug1");
+        }else if(gamepad1.dpad_down){
+            armLeft.setPower(0.2);
+            armLeft.setTargetPosition(armLeft.getTargetPosition()+increment);
+            armRight.setPower(0.2);
+            armRight.setTargetPosition(armRight.getTargetPosition()+increment);
+            telemetry.addLine("debug2");
+        }
+
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
+
+        lastX = gamepad1.x;
     }
 
     /*
