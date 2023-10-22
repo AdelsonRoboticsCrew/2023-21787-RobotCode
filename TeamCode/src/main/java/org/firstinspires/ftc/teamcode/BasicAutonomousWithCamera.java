@@ -93,8 +93,11 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
+    static final double     STRAFE_SPEED            = 0.5;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    double x;
+    double y;
 
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
@@ -141,35 +144,45 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
                           rightBackDrive.getCurrentPosition());
         telemetry.update();
 
+        initTfod();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        if (opModeIsActive()) {
-            while (opModeIsActive()) {
+        visionPortal.resumeStreaming();
 
-                telemetryTfod();
 
-                // Push telemetry to the Driver Station.
-                telemetry.update();
+        telemetryTfod();
 
-                // Save CPU resources; can resume streaming when needed.
-                if (gamepad1.dpad_down) {
-                    visionPortal.stopStreaming();
-                } else if (gamepad1.dpad_up) {
-                    visionPortal.resumeStreaming();
-                }
+        // Push telemetry to the Driver Station.
+        telemetry.update();
 
-                // Share the CPU.
-                sleep(20);
-            }
+        // Save CPU resources; can resume streaming when needed.
+
+        Recognition recognition = tfod.getRecognitions().get(0);
+        int width = recognition.getImageWidth();
+
+
+
+
+        // Share the CPU.
+
+
+        // Step through each leg of the path,
+        // Note: Reverse movement is obtained by setting a negative distance (not speed)
+
+
+        visionPortal.stopStreaming();
+        if(x <= width / 3){
+            encoderDrive(STRAFE_SPEED, -5, 5, 5, -5, 3);
+        }else if(x > width / 3 && x <= 2 * width / 3){
             encoderDrive(DRIVE_SPEED, 5, 5, 5, 5, 3);
-            // Step through each leg of the path,
-            // Note: Reverse movement is obtained by setting a negative distance (not speed)
-
-            telemetry.addData("Path", "Complete");
-            telemetry.update();
-            sleep(1000);  // pause to display final telemetry message.
+        }else{
+            encoderDrive(STRAFE_SPEED, 5, -5, -5, 5, 3);
         }
 
+        telemetry.addData("Path", "Complete");
+        telemetry.update();
+        sleep(1000);  // pause to display final telemetry message.
 
     }
 
@@ -314,8 +327,8 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
             telemetry.addData(""," ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
