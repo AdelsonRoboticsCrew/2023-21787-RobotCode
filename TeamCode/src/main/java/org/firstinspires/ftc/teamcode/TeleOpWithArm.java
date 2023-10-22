@@ -162,6 +162,7 @@ public class TeleOpWithArm extends OpMode
 
         if(clawOpen){
             telemetry.addLine("claw debug");
+            //this is where all the servo stuff for the intake would go
         }
 
         int increment = 2;
