@@ -29,9 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
@@ -46,9 +47,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Continuous Servo Test", group="Iterative OpMode")
+@Autonomous(name="Continuous Servo Test", group="Iterative OpMode")
 //@Disabled
-public class CRServoTest extends OpMode
+public class CRServoTest extends LinearOpMode
 {
     CRServo servo;
 
@@ -57,43 +58,14 @@ public class CRServoTest extends OpMode
      * Code to run ONCE when the driver hits INIT
      */
     @Override
-    public void init() {
-        telemetry.addData("Status", "Initialized");
+    public void runOpMode() {
         servo = hardwareMap.get(CRServo.class, "servo");
-        servo.setDirection(DcMotorSimple.Direction.FORWARD);
+        waitForStart();
+        while(opModeIsActive()){
+            servo.setPower(0.7);
+            sleep(1000);
 
-        // Tell the driver that initialization is complete.
-        telemetry.addData("Status", "Initialized");
+        }
     }
-
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
-    }
-
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
-
-    }
-
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
-        servo.setPower(1.0);
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
-    }
-
 }
+
