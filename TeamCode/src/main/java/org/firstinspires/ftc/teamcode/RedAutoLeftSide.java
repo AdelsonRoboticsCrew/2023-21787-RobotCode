@@ -30,11 +30,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.CRServo;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -69,15 +69,19 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Autonomous w/ camera framework", group="Robot")
+@Autonomous(name="Left Side Red Alliance", group="Robot")
 
-public class BasicAutonomousWithCamera extends LinearOpMode {
+public class RedAutoLeftSide extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftFrontDrive   = null;
     private DcMotor         leftBackDrive   = null;
     private DcMotor         rightFrontDrive  = null;
     private DcMotor         rightBackDrive  = null;
+    private DcMotor armLeft = null;
+    private DcMotor armRight = null;
+    private boolean clawOpen = false;
+    CRServo claw;
 
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -97,8 +101,6 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
     static final double     STRAFE_SPEED            = 0.5;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    double x;
-    double y;
     private static final String TFOD_MODEL_ASSET = "CenterStage.tflite";
     private static final String[] LABELS = {
             "Pixel",
@@ -122,6 +124,9 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        armLeft = hardwareMap.get(DcMotor.class, "arm_left");
+        armRight = hardwareMap.get(DcMotor.class, "arm_right");
+        claw = hardwareMap.get(CRServo.class, "claw");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -130,6 +135,17 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        armLeft.setDirection(DcMotor.Direction.FORWARD);
+        armRight.setDirection(DcMotor.Direction.FORWARD);
+
+        armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        armLeft.setTargetPosition(0);
+        armRight.setTargetPosition(0);
+
+        armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -155,20 +171,74 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
         waitForStart();
         visionPortal.resumeStreaming();
 
+        encoderDrive(STRAFE_SPEED, -2, 2, 2, -2, 1);
+        encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();
-        while(System.nanoTime() <= time + 3000000000L){
-            telemetryTfod();
-            telemetry.update();
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        while(System.nanoTime() <= time + 500000000L){
+            currentRecognitions = tfod.getRecognitions();
         }
+        if(currentRecognitions.size() > 0){
+            //Left Side
+            encoderDrive(STRAFE_SPEED, -2, 2, 2, -2, 1);
+            intakeOut();
+            sleep(500);
+            intakeStop();
+            encoderDrive(DRIVE_SPEED, -12, -12, -12, -12, 3);
+            encoderDrive(STRAFE_SPEED, -8, 8, 8, -8, 3);
+            encoderDrive(DRIVE_SPEED, 24, 24, 24, 24, 3);
+            encoderDrive(TURN_SPEED, 5, 5, -5, -5, 2);
+            encoderDrive(DRIVE_SPEED, 51, 51, 51, 51, 5);
+            encoderDrive(STRAFE_SPEED, 4, -4, -4, 4, 1);
+            moveArm(15);
+            intakeOut();
+            sleep(500);
+            intakeStop();
+            encoderDrive(STRAFE_SPEED, -6, 6, 6, -6, 1);
+        }else{
+            encoderDrive(STRAFE_SPEED,6,-6,-6, 6, 1);
+            encoderDrive(DRIVE_SPEED, 6, 6, 6, 6,1);
+            time = System.nanoTime();
+            currentRecognitions = tfod.getRecognitions();
+            while(System.nanoTime() <= time + 500000000L){
+                currentRecognitions = tfod.getRecognitions();
+            }
+            if(currentRecognitions.size() > 0){
+                intakeOut();
+                sleep(500);
+                encoderDrive(DRIVE_SPEED, -6, -6, -6, -6, 2);
+                encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 2);
+                encoderDrive(DRIVE_SPEED, 12,12,12,12,1);
+                encoderDrive(TURN_SPEED, 2, 2, -2, -2, 3);
+                encoderDrive(DRIVE_SPEED, 54, 54, 54, 54, 5);
+                encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 2);
+                intakeOut();
+                sleep(500);
+                intakeOut();
+                encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 2);
+            }else{
+                encoderDrive(TURN_SPEED, 2, 2, -2, -2, 1);
+                intakeOut();
+                sleep(500);
+                intakeStop();
+                encoderDrive(DRIVE_SPEED, -12,-12,-12,-12,2);
+                encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 3);
+                encoderDrive(DRIVE_SPEED, 39, 39, 39, 39, 5);
+                encoderDrive(STRAFE_SPEED, 18, -18, -18, 18, 2);
+                intakeOut();
+                sleep(500);
+                intakeOut();
+                encoderDrive(STRAFE_SPEED, -18, 18, 18, -18, 2);
+
+            }
+        }
+
 
 
         // Push telemetry to the Driver Station.
 
 
         // Save CPU resources; can resume streaming when needed.
-
-        Recognition recognition = tfod.getRecognitions().get(0);
-        int width = recognition.getImageWidth();
 
 
 
@@ -182,15 +252,7 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
 
         visionPortal.stopStreaming();
         visionPortal.close();
-        /*
-        if(x <= width / 3){
-            encoderDrive(STRAFE_SPEED, -5, 5, 5, -5, 3);
-        }else if(x > width / 3 && x <= 2 * width / 3){
-            encoderDrive(DRIVE_SPEED, 5, 5, 5, 5, 3);
-        }else{
-            encoderDrive(STRAFE_SPEED, 5, -5, -5, 5, 3);
-        }
-        */
+
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
@@ -338,8 +400,8 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
             telemetry.addData(""," ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
@@ -347,5 +409,25 @@ public class BasicAutonomousWithCamera extends LinearOpMode {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
 
+
+    }
+
+    private void moveArm(int increment){
+        armLeft.setPower(0.2);
+        armLeft.setTargetPosition(armLeft.getTargetPosition()-increment);
+        armRight.setPower(0.2);
+        armRight.setTargetPosition(armRight.getTargetPosition()-increment);
+    }
+
+    private void intakeIn(){
+        claw.setPower(1.0);
+    }
+
+    private void intakeOut(){
+        claw.setPower(-1.0);
+    }
+
+    private void intakeStop(){
+        claw.setPower(0);
     }
 }
