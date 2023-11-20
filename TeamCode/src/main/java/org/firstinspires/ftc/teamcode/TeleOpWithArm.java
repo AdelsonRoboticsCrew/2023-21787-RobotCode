@@ -158,9 +158,9 @@ public class TeleOpWithArm extends OpMode
         rightFrontDrive.setPower(rightFrontPower);
         rightBackDrive.setPower(rightBackPower);
 
-
         if(gamepad1.x){
             intakeIn = true;
+            intakeOut = false;
         }else if(gamepad1.y){
             intakeIn = false;
             intakeOut = true;
