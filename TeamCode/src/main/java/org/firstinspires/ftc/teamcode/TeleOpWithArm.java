@@ -31,10 +31,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -62,8 +61,10 @@ public class TeleOpWithArm extends OpMode
     private DcMotor rightBackDrive = null;
     private DcMotor armLeft = null;
     private DcMotor armRight = null;
-    private boolean clawOpen = false;
-    private boolean lastX;
+    private CRServo claw = null;
+    private boolean intakeIn = false;
+    private boolean intakeOut = false;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -81,6 +82,7 @@ public class TeleOpWithArm extends OpMode
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         armLeft = hardwareMap.get(DcMotor.class, "arm_left");
         armRight = hardwareMap.get(DcMotor.class, "arm_right");
+        claw = hardwareMap.get(CRServo.class, "claw");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -157,13 +159,23 @@ public class TeleOpWithArm extends OpMode
         rightBackDrive.setPower(rightBackPower);
 
 
-        if(gamepad1.x && !lastX){
-            clawOpen = !clawOpen;
+        if(gamepad1.x){
+            intakeIn = true;
+        }else if(gamepad1.y){
+            intakeIn = false;
+            intakeOut = true;
+        }else{
+            intakeIn = false;
+            intakeOut = false;
         }
 
-        if(clawOpen){
-            telemetry.addLine("claw debug");
+        if(intakeIn){
+            claw.setPower(1.0);
             //this is where all the servo stuff for the intake would go
+        }else if(intakeOut){
+            claw.setPower(-1.0);
+        }else{
+            claw.setPower(0);
         }
 
         int increment = 2;
@@ -185,7 +197,6 @@ public class TeleOpWithArm extends OpMode
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
 
-        lastX = gamepad1.x;
     }
 
     /*
