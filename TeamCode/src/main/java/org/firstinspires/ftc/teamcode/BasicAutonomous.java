@@ -100,9 +100,9 @@ public class BasicAutonomous extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -127,7 +127,7 @@ public class BasicAutonomous extends LinearOpMode {
         waitForStart();
 
         // Step through each leg of the path,
-        encoderDrive(DRIVE_SPEED, 5, 5, 5, 5, 3);
+        encoderDrive(DRIVE_SPEED, 24, 24, 24, 24, 5);
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
 
         telemetry.addData("Path", "Complete");

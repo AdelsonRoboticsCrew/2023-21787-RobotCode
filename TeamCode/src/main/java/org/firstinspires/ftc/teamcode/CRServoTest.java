@@ -47,7 +47,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Continuous Servo Test", group="Iterative OpMode")
+@Autonomous(name="Continuous Servo Test", group="Robot")
 //@Disabled
 public class CRServoTest extends LinearOpMode
 {
