@@ -63,6 +63,7 @@ public class TeleOpWithArm extends OpMode
     private DcMotor armBottom = null;
     private DcMotor armTop = null;
     private CRServo intake = null;
+    private CRServo intake2 = null;
     private boolean clawIn = false;
     private boolean clawOut = false;
     private boolean armOut = false;
@@ -91,6 +92,7 @@ public class TeleOpWithArm extends OpMode
         armBottom = hardwareMap.get(DcMotor.class, "arm_bottom");
         armTop = hardwareMap.get(DcMotor.class, "arm_top");
         intake = hardwareMap.get(CRServo.class, "intake");
+        intake2 = hardwareMap.get(CRServo.class, "intake_2");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -182,10 +184,24 @@ public class TeleOpWithArm extends OpMode
             armOut = !armOut;
         }
 
-        if(clawIn){
-            telemetry.addLine("claw debug");
+        if(clawIn) {
+            telemetry.addLine("claw debug in");
             //this is where all the servo stuff for the intake would go
             intake.setPower(1.0);
+            intake2.setPower(-1.0);
+        }
+
+        if(clawOut){
+            telemetry.addLine("claw debug out");
+            //this is where all the servo stuff for the intake would go
+            intake2.setPower(1.0);
+            intake.setPower(-1.0);
+        }
+        if(!(clawIn || clawOut)){
+            telemetry.addLine("claw debug stop");
+            intake.setPower(0);
+            intake2.setPower(0);
+        }
 
         if(armOut){
             armTop.setPower(0.2);
@@ -216,7 +232,6 @@ public class TeleOpWithArm extends OpMode
      */
 
 
-    }
     @Override
     public void stop(){
         
