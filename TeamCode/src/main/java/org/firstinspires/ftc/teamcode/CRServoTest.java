@@ -61,6 +61,7 @@ public class CRServoTest extends LinearOpMode
     @Override
     public void runOpMode() {
         servo = hardwareMap.get(CRServo.class, "servo");
+        servo2 = hardwareMap.get(CRServo.class, "servo2");
         waitForStart();
         while(opModeIsActive()){
             servo.setPower(0.1);
