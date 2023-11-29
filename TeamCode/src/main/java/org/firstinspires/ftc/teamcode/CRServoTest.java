@@ -52,6 +52,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class CRServoTest extends LinearOpMode
 {
     CRServo servo;
+    CRServo servo2;
 
 
     /*
@@ -62,8 +63,8 @@ public class CRServoTest extends LinearOpMode
         servo = hardwareMap.get(CRServo.class, "servo");
         waitForStart();
         while(opModeIsActive()){
-            servo.setPower(0.7);
-            sleep(1000);
+            servo.setPower(0.1);
+            servo2.setPower(-0.1);
 
         }
     }
