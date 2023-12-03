@@ -101,9 +101,9 @@ public class BlueAutoLeftSide extends LinearOpMode {
     static final double     STRAFE_SPEED            = 0.5;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private static final String TFOD_MODEL_ASSET = "CenterStage.tflite";
+    private static final String TFOD_MODEL_ASSET = "BluePropModel.tflite";
     private static final String[] LABELS = {
-            "Pixel",
+            "BlueProp",
     };
 
     /**
