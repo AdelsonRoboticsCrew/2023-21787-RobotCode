@@ -31,7 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -60,20 +60,15 @@ public class TeleOpWithArm extends OpMode
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    private DcMotor armBottom = null;
-    private DcMotor armTop = null;
-    private CRServo intake = null;
-    private CRServo intake2 = null;
-    private boolean clawIn = false;
-    private boolean clawOut = false;
-    private boolean armOut = false;
-    private boolean lastLBump = false;
-    private boolean lastRBump = false;
+    private DcMotor arm = null;
+    private DcMotor armExtender = null;
+    private Servo leftClaw = null;
+    private Servo rightClaw = null;
+    private boolean clawOpen = true;
+    private boolean armDown = true;
     private boolean lastB = false;
-    final int topOutPos = 0;
-    final int topInPos = 0;
-    final int bottomOutPos = 0;
-    final int bottomInPos = 0;
+    private boolean lastX = false;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -89,10 +84,10 @@ public class TeleOpWithArm extends OpMode
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        armBottom = hardwareMap.get(DcMotor.class, "arm_bottom");
-        armTop = hardwareMap.get(DcMotor.class, "arm_top");
-        intake = hardwareMap.get(CRServo.class, "intake");
-        intake2 = hardwareMap.get(CRServo.class, "intake_2");
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
+        leftClaw = hardwareMap.get(Servo.class, "left_claw");
+        rightClaw = hardwareMap.get(Servo.class, "right_claw");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -102,18 +97,18 @@ public class TeleOpWithArm extends OpMode
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        armBottom.setDirection(DcMotor.Direction.FORWARD);
-        armTop.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.FORWARD);
+        armExtender.setDirection(DcMotor.Direction.FORWARD);
 
-        armBottom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armTop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Set to default Positions
-        armBottom.setTargetPosition(0);
-        armTop.setTargetPosition(0);
+        arm.setTargetPosition(0);
+        armExtender.setTargetPosition(0);
 
-        armBottom.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armTop.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -172,58 +167,40 @@ public class TeleOpWithArm extends OpMode
 
 
 
-        if(gamepad1.left_bumper && !lastLBump){
-            clawIn = !clawIn;
-            clawOut = false;
-        }
-        if(gamepad1.right_bumper && lastRBump){
-            clawOut = !clawOut;
-            clawIn = false;
+        if(gamepad1.x && !lastX){
+            clawOpen = !clawOpen;
         }
         if(gamepad1.b && !lastB){
-            armOut = !armOut;
+            armDown = !armDown;
         }
 
-        if(clawIn) {
-            telemetry.addLine("claw debug in");
-            //this is where all the servo stuff for the intake would go
-            intake.setPower(1.0);
-            intake2.setPower(-1.0);
-        }
-
-        if(clawOut){
-            telemetry.addLine("claw debug out");
-            //this is where all the servo stuff for the intake would go
-            intake2.setPower(1.0);
-            intake.setPower(-1.0);
-        }
-        if(!(clawIn || clawOut)){
-            telemetry.addLine("claw debug stop");
-            intake.setPower(0);
-            intake2.setPower(0);
-        }
-
-        if(armOut){
-            armTop.setPower(0.2);
-            armTop.setTargetPosition(topOutPos);
-            armBottom.setPower(0.2);
-            armBottom.setTargetPosition(bottomOutPos);
-            telemetry.addLine("debug1");
+        if(clawOpen) {
+            telemetry.addLine("claw debug open");
+            leftClaw.setPosition(0.0); //find value during testing
+            rightClaw.setPosition(0.0); //find value during testing
         }else{
-            armTop.setPower(0.2);
-            armTop.setTargetPosition(topInPos);
-            armBottom.setPower(0.2);
-            armBottom.setTargetPosition(bottomInPos);
-            telemetry.addLine("debug2");
+            telemetry.addLine("claw debug close");
+            leftClaw.setPosition(0.0); //find value during testing
+            rightClaw.setPosition(0.0); //find value during testing
+        }
+        int increment = 2;
+        if(gamepad1.dpad_up){
+            armExtender.setPower(0.2);
+            //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
+            armExtender.setTargetPosition(armExtender.getTargetPosition() - increment);
+            telemetry.addLine("arm go out");
+        }else{
+            armExtender.setPower(0.2);
+            //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
+            armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
+            telemetry.addLine("arm go in");
         }
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
 
-
-        lastLBump = gamepad1.left_bumper;
-        lastRBump = gamepad1.right_bumper;
+        lastX = gamepad1.x;
         lastB = gamepad1.b;
     }
 
