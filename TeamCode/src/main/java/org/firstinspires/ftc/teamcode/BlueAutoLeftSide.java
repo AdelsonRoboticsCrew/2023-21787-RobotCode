@@ -69,7 +69,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Right Side Red Alliance", group="Robot")
+@Autonomous(name="Left Side Blue Alliance", group="Robot")
 
 public class BlueAutoLeftSide extends LinearOpMode {
 
@@ -78,10 +78,12 @@ public class BlueAutoLeftSide extends LinearOpMode {
     private DcMotor         leftBackDrive   = null;
     private DcMotor         rightFrontDrive  = null;
     private DcMotor         rightBackDrive  = null;
-    private DcMotor armLeft = null;
+   /* private DcMotor armLeft = null;
     private DcMotor armRight = null;
     private boolean clawOpen = false;
     CRServo claw;
+
+    */
 
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -100,21 +102,23 @@ public class BlueAutoLeftSide extends LinearOpMode {
     static final double     TURN_SPEED              = 0.5;
     static final double     STRAFE_SPEED            = 0.5;
 
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    /*private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     private static final String TFOD_MODEL_ASSET = "BluePropModel.tflite";
     private static final String[] LABELS = {
             "BlueProp",
     };
 
+     */
+
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
-    private TfodProcessor tfod;
+    //private TfodProcessor tfod;
 
     /**
      * The variable to store our instance of the vision portal.
      */
-    private VisionPortal visionPortal;
+    //private VisionPortal visionPortal;
 
     @Override
     public void runOpMode() {
@@ -124,9 +128,11 @@ public class BlueAutoLeftSide extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        armLeft = hardwareMap.get(DcMotor.class, "arm_left");
+        /*armLeft = hardwareMap.get(DcMotor.class, "arm_left");
         armRight = hardwareMap.get(DcMotor.class, "arm_right");
         claw = hardwareMap.get(CRServo.class, "claw");
+
+         */
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -135,7 +141,7 @@ public class BlueAutoLeftSide extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        armLeft.setDirection(DcMotor.Direction.FORWARD);
+        /*armLeft.setDirection(DcMotor.Direction.FORWARD);
         armRight.setDirection(DcMotor.Direction.FORWARD);
 
         armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -146,6 +152,8 @@ public class BlueAutoLeftSide extends LinearOpMode {
 
         armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+         */
 
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -165,14 +173,14 @@ public class BlueAutoLeftSide extends LinearOpMode {
                           rightBackDrive.getCurrentPosition());
         telemetry.update();
 
-        initTfod();
+        //initTfod();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        visionPortal.resumeStreaming();
+        //visionPortal.resumeStreaming();
 
-        encoderDrive(STRAFE_SPEED, 10, -10, -10, 10, 1);
-        encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
+        encoderDrive(STRAFE_SPEED, -48, 48, 48, -48, 3);
+        /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         while(System.nanoTime() <= time + 500000000L){
@@ -246,6 +254,8 @@ public class BlueAutoLeftSide extends LinearOpMode {
 
         visionPortal.stopStreaming();
         visionPortal.close();
+
+         */
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -331,7 +341,7 @@ public class BlueAutoLeftSide extends LinearOpMode {
     /**
      * Initialize the TensorFlow Object Detection processor.
      */
-    private void initTfod() {
+    /*private void initTfod() {
 
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
@@ -424,4 +434,6 @@ public class BlueAutoLeftSide extends LinearOpMode {
     private void intakeStop(){
         claw.setPower(0);
     }
+
+     */
 }
