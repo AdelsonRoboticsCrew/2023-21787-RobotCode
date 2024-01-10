@@ -159,6 +159,10 @@ public class TeleOpWithArm extends OpMode
             rightFrontPower /= divisor;
             rightBackPower /= divisor;
         }
+        leftBackPower*=0.7;
+        leftFrontPower*=0.7;
+        rightBackPower*=0.7;
+        rightFrontPower*=0.7;
         // Send calculated power to wheels
         leftFrontDrive.setPower(leftFrontPower);
         leftBackDrive.setPower(leftBackPower);
