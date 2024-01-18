@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -62,10 +63,10 @@ public class TeleOpWithArm extends OpMode
 
     private DcMotor arm = null;
     private DcMotor armExtender = null;
-    private Servo leftClaw = null;
-    private Servo rightClaw = null;
+    private Servo claw = null;
+    private Servo wrist = null;
     private boolean clawOpen = true;
-    private boolean armDown = true;
+    private boolean wristDown = true;
     private boolean lastB = false;
     private boolean lastX = false;
 
@@ -86,8 +87,8 @@ public class TeleOpWithArm extends OpMode
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
-        leftClaw = hardwareMap.get(Servo.class, "left_claw");
-        rightClaw = hardwareMap.get(Servo.class, "right_claw");
+        claw = hardwareMap.get(Servo.class, "claw");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -171,41 +172,52 @@ public class TeleOpWithArm extends OpMode
 
 
 
-        if(gamepad1.x && !lastX){
+        if(gamepad2.x && !lastX){
             clawOpen = !clawOpen;
         }
-        if(gamepad1.b && !lastB){
-            armDown = !armDown;
+        if(gamepad2.b && !lastB){
+            wristDown = !wristDown;
         }
+
 
         if(clawOpen) {
             telemetry.addLine("claw debug open");
-            leftClaw.setPosition(0.0); //find value during testing
-            rightClaw.setPosition(0.0); //find value during testing
+            claw.setPosition(0.0); //find value during testing
         }else{
             telemetry.addLine("claw debug close");
-            leftClaw.setPosition(0.0); //find value during testing
-            rightClaw.setPosition(0.0); //find value during testing
+            claw.setPosition(0.0); //find value during testing
         }
         int increment = 2;
-        if(gamepad1.dpad_up){
+        if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) > 0.3){
             armExtender.setPower(0.2);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
             armExtender.setTargetPosition(armExtender.getTargetPosition() - increment);
             telemetry.addLine("arm go out");
-        }else{
+        }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) < 0.3){
             armExtender.setPower(0.2);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
             armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
             telemetry.addLine("arm go in");
         }
 
+        if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) > 0.3){
+            arm.setPower(0.2);
+            //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
+            arm.setTargetPosition(arm.getTargetPosition() - increment);
+            telemetry.addLine("arm go up");
+        }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) < 0.3){
+            arm.setPower(0.2);
+            //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
+            arm.setTargetPosition(arm.getTargetPosition() + increment);
+            telemetry.addLine("arm go down");
+        }
+
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
 
-        lastX = gamepad1.x;
-        lastB = gamepad1.b;
+        lastX = gamepad2.x;
+        lastB = gamepad2.b;
     }
 
     /*
