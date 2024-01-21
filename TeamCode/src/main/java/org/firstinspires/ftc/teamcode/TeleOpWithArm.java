@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -64,12 +65,13 @@ public class TeleOpWithArm extends OpMode
     private DcMotor arm = null;
     private DcMotor armExtender = null;
     private Servo claw = null;
-    private Servo wrist = null;
-    private boolean clawOpen = true;
-    private boolean wristDown = true;
+    //private Servo wrist = null;
+    //private boolean clawOpen = true;
+
+    //private boolean clawClosed = false;
+    //private boolean wristDown = true;
     private boolean lastB = false;
     private boolean lastX = false;
-
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -88,15 +90,15 @@ public class TeleOpWithArm extends OpMode
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
         claw = hardwareMap.get(Servo.class, "claw");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        //wrist = hardwareMap.get(Servo.class, "wrist");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         arm.setDirection(DcMotor.Direction.FORWARD);
         armExtender.setDirection(DcMotor.Direction.FORWARD);
@@ -145,25 +147,25 @@ public class TeleOpWithArm extends OpMode
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double drive = -gamepad1.left_stick_y;
-        double turn  =  gamepad1.right_stick_x;
+        double turn = gamepad1.right_stick_x;
         double strafe = gamepad1.left_stick_x;
-        leftFrontPower    = drive + turn + strafe;
-        leftBackPower    = drive + turn - strafe;
-        rightFrontPower   = drive - turn - strafe;
-        rightBackPower   = drive - turn + strafe;
+        leftFrontPower = drive + turn + strafe;
+        leftBackPower = drive + turn - strafe;
+        rightFrontPower = drive - turn - strafe;
+        rightBackPower = drive - turn + strafe;
 
 
         double divisor = Math.max(Math.max(leftFrontPower, leftBackPower), Math.max(rightFrontPower, rightBackPower));
-        if(divisor >= 0.7){
+        if (divisor >= 0.7) {
             leftFrontPower /= divisor;
             leftBackPower /= divisor;
             rightFrontPower /= divisor;
             rightBackPower /= divisor;
         }
-        leftBackPower*=0.7;
-        leftFrontPower*=0.7;
-        rightBackPower*=0.7;
-        rightFrontPower*=0.7;
+        leftBackPower *= 0.7;
+        leftFrontPower *= 0.7;
+        rightBackPower *= 0.7;
+        rightFrontPower *= 0.7;
         // Send calculated power to wheels
         leftFrontDrive.setPower(leftFrontPower);
         leftBackDrive.setPower(leftBackPower);
@@ -171,45 +173,68 @@ public class TeleOpWithArm extends OpMode
         rightBackDrive.setPower(rightBackPower);
 
 
+        if (gamepad2.x){// && !lastX) {
+            //clawOpen = !clawOpen;
+            claw.setPosition(0.7); //find value during testing
 
-        if(gamepad2.x && !lastX){
-            clawOpen = !clawOpen;
         }
+        if (gamepad2.b){ //&& !lastB) {
+            //clawClosed = !clawClosed;
+            claw.setPosition(1.0);
+        }
+        //rueben chose B as the closed
+        /*
         if(gamepad2.b && !lastB){
             wristDown = !wristDown;
         }
-
-
+*/
+        /*if(clawClosed){
+telemetry.addLine("claw debug close");
+claw.setPosition(1.0);
+{
+/*
         if(clawOpen) {
             telemetry.addLine("claw debug open");
-            claw.setPosition(0.0); //find value during testing
+            claw.setPosition(0.5); //find value during testing
         }else{
             telemetry.addLine("claw debug close");
-            claw.setPosition(0.0); //find value during testing
+            claw.setPosition(1.0); //find value during testing
+        } */
+/*
+        if(wristDown){
+            telemetry.addLine("wrist debug down");
+            wrist.setPosition(0.8);
+        }else{
+            telemetry.addLine("wrist debug up");
+            wrist.setPosition(0.0);
         }
+*/
         int increment = 2;
-        if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) > 0.3){
-            armExtender.setPower(0.2);
-            //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
-            armExtender.setTargetPosition(armExtender.getTargetPosition() - increment);
-            telemetry.addLine("arm go out");
-        }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) < 0.3){
-            armExtender.setPower(0.2);
-            //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
+        if(Range.clip(-gamepad2.left_stick_y, 0.0, 1.0) > 0.3){
+            armExtender.setPower(0.4);
+            //3620 limit
             armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
-            telemetry.addLine("arm go in");
+            telemetry.addLine("arm go out value: " + armExtender.getTargetPosition());
+        }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 0.0) < 0.3){
+            armExtender.setPower(0.4);
+            //ok so i changed their speed a little so that they have some more control over it
+            //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
+            if(armExtender.getTargetPosition() - increment > 0) {
+                armExtender.setTargetPosition(armExtender.getTargetPosition() - increment);
+            }
+            telemetry.addLine("arm go in value: " + armExtender.getTargetPosition());
         }
 
-        if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) > 0.3){
-            arm.setPower(0.2);
-            //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
-            arm.setTargetPosition(arm.getTargetPosition() - increment);
-            telemetry.addLine("arm go up");
-        }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) < 0.3){
-            arm.setPower(0.2);
+        if(Range.clip(-gamepad2.right_stick_y, 0.0, 1.0) > 0.3){
+            arm.setPower(0.5);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
             arm.setTargetPosition(arm.getTargetPosition() + increment);
-            telemetry.addLine("arm go down");
+            telemetry.addLine("arm go up value: " + arm.getTargetPosition());
+        }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 0.0) < -0.3){
+            arm.setPower(0.5);
+            //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
+            arm.setTargetPosition(arm.getTargetPosition() - increment);
+            telemetry.addLine("arm go down value: " + arm.getTargetPosition());
         }
 
         // Show the elapsed game time and wheel power.
