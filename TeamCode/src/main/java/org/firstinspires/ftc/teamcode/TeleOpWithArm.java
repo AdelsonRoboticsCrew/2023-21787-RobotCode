@@ -175,12 +175,12 @@ public class TeleOpWithArm extends OpMode
 
         if (gamepad2.x){// && !lastX) {
             //clawOpen = !clawOpen;
-            claw.setPosition(0.7); //find value during testing
+            claw.setPosition(0.5); //find value during testing
 
         }
         if (gamepad2.b){ //&& !lastB) {
             //clawClosed = !clawClosed;
-            claw.setPosition(1.0);
+            claw.setPosition(0);
         }
         //rueben chose B as the closed
         /*
@@ -226,12 +226,12 @@ claw.setPosition(1.0);
         }
 
         if(Range.clip(-gamepad2.right_stick_y, 0.0, 1.0) > 0.3){
-            arm.setPower(0.5);
+            arm.setPower(0.2);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
             arm.setTargetPosition(arm.getTargetPosition() + increment);
             telemetry.addLine("arm go up value: " + arm.getTargetPosition());
         }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 0.0) < -0.3){
-            arm.setPower(0.5);
+            arm.setPower(0.2);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
             arm.setTargetPosition(arm.getTargetPosition() - increment);
             telemetry.addLine("arm go down value: " + arm.getTargetPosition());
