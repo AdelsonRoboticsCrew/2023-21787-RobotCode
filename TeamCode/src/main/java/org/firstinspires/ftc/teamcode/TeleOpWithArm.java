@@ -65,11 +65,10 @@ public class TeleOpWithArm extends OpMode
     private DcMotor arm = null;
     private DcMotor armExtender = null;
     private Servo claw = null;
-    //private Servo wrist = null;
-    //private boolean clawOpen = true;
+    private Servo wrist = null;
+    private boolean clawOpen = true;
 
-    //private boolean clawClosed = false;
-    //private boolean wristDown = true;
+    private boolean wristDown = true;
     private boolean lastB = false;
     private boolean lastX = false;
 
@@ -90,7 +89,7 @@ public class TeleOpWithArm extends OpMode
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
         claw = hardwareMap.get(Servo.class, "claw");
-        //wrist = hardwareMap.get(Servo.class, "wrist");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -173,33 +172,20 @@ public class TeleOpWithArm extends OpMode
         rightBackDrive.setPower(rightBackPower);
 
 
-        if (gamepad2.x){// && !lastX) {
-            //clawOpen = !clawOpen;
-            claw.setPosition(0.5); //find value during testing
-
+        if (gamepad2.x && !lastX) {
+            clawOpen = !clawOpen;
         }
-        if (gamepad2.b){ //&& !lastB) {
-            //clawClosed = !clawClosed;
-            claw.setPosition(0);
-        }
-        //rueben chose B as the closed
-        /*
-        if(gamepad2.b && !lastB){
+        if (gamepad2.b && !lastB) {
             wristDown = !wristDown;
         }
-*/
-        /*if(clawClosed){
-telemetry.addLine("claw debug close");
-claw.setPosition(1.0);
-{
-/*
+
         if(clawOpen) {
             telemetry.addLine("claw debug open");
             claw.setPosition(0.5); //find value during testing
         }else{
             telemetry.addLine("claw debug close");
             claw.setPosition(1.0); //find value during testing
-        } */
+        }
 /*
         if(wristDown){
             telemetry.addLine("wrist debug down");
@@ -213,7 +199,9 @@ claw.setPosition(1.0);
         if(Range.clip(-gamepad2.left_stick_y, 0.0, 1.0) > 0.3){
             armExtender.setPower(0.4);
             //3620 limit
-            armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
+            if(armExtender.getTargetPosition() + increment < 3620) {
+                armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
+            }
             telemetry.addLine("arm go out value: " + armExtender.getTargetPosition());
         }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 0.0) < 0.3){
             armExtender.setPower(0.4);
