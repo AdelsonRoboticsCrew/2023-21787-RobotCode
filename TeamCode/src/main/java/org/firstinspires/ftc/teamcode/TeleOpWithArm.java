@@ -65,11 +65,11 @@ public class TeleOpWithArm extends OpMode
     private DcMotor arm = null;
     private DcMotor armExtender = null;
     private Servo claw = null;
-    private Servo wrist = null;
+    //private Servo wrist = null;
     private boolean clawOpen = true;
 
-    private boolean wristDown = true;
-    private boolean lastB = false;
+    //private boolean wristDown = true;
+    //private boolean lastB = false;
     private boolean lastX = false;
 
     /*
@@ -89,7 +89,7 @@ public class TeleOpWithArm extends OpMode
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
         claw = hardwareMap.get(Servo.class, "claw");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        //wrist = hardwareMap.get(Servo.class, "wrist");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -175,16 +175,18 @@ public class TeleOpWithArm extends OpMode
         if (gamepad2.x && !lastX) {
             clawOpen = !clawOpen;
         }
-        if (gamepad2.b && !lastB) {
+        /*if (gamepad2.b && !lastB) {
             wristDown = !wristDown;
         }
+
+         */
 
         if(clawOpen) {
             telemetry.addLine("claw debug open");
             claw.setPosition(0.5); //find value during testing
         }else{
             telemetry.addLine("claw debug close");
-            claw.setPosition(1.0); //find value during testing
+            claw.setPosition(0.2); //find value during testing
         }
 /*
         if(wristDown){
@@ -196,32 +198,36 @@ public class TeleOpWithArm extends OpMode
         }
 */
         int increment = 2;
-        if(Range.clip(-gamepad2.left_stick_y, 0.0, 1.0) > 0.3){
+        if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) > 0.3){
             armExtender.setPower(0.4);
             //3620 limit
-            if(armExtender.getTargetPosition() + increment < 3620) {
+            if(armExtender.getTargetPosition() + increment <= 3300) {
                 armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
             }
             telemetry.addLine("arm go out value: " + armExtender.getTargetPosition());
-        }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 0.0) < 0.3){
+        }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) < -0.3){
             armExtender.setPower(0.4);
             //ok so i changed their speed a little so that they have some more control over it
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
-            if(armExtender.getTargetPosition() - increment > 0) {
+            if(armExtender.getTargetPosition() - increment >= 0) {
                 armExtender.setTargetPosition(armExtender.getTargetPosition() - increment);
             }
             telemetry.addLine("arm go in value: " + armExtender.getTargetPosition());
         }
 
-        if(Range.clip(-gamepad2.right_stick_y, 0.0, 1.0) > 0.3){
-            arm.setPower(0.2);
+        if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) > 0.3){
+            arm.setPower(0.3);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
-            arm.setTargetPosition(arm.getTargetPosition() + increment);
+            if(arm.getTargetPosition() + increment <= 1225) {
+                arm.setTargetPosition(arm.getTargetPosition() + increment);
+            }
             telemetry.addLine("arm go up value: " + arm.getTargetPosition());
-        }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 0.0) < -0.3){
-            arm.setPower(0.2);
+        }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) < -0.3){
+            arm.setPower(0.3);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
-            arm.setTargetPosition(arm.getTargetPosition() - increment);
+            if(arm.getTargetPosition() - increment >= 0) {
+                arm.setTargetPosition(arm.getTargetPosition() - increment);
+            }
             telemetry.addLine("arm go down value: " + arm.getTargetPosition());
         }
 
@@ -230,7 +236,7 @@ public class TeleOpWithArm extends OpMode
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
 
         lastX = gamepad2.x;
-        lastB = gamepad2.b;
+        //lastB = gamepad2.b;
     }
 
     /*
