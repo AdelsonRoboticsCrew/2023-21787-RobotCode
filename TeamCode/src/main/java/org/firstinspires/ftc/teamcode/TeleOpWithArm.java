@@ -66,7 +66,7 @@ public class TeleOpWithArm extends OpMode
     private DcMotor armExtender = null;
     private Servo claw = null;
     //private Servo wrist = null;
-    private boolean clawOpen = true;
+    private boolean clawOpen = false;
 
     //private boolean wristDown = true;
     //private boolean lastB = false;
@@ -148,10 +148,10 @@ public class TeleOpWithArm extends OpMode
         double drive = -gamepad1.left_stick_y;
         double turn = gamepad1.right_stick_x;
         double strafe = gamepad1.left_stick_x;
-        leftFrontPower = drive + turn + strafe;
-        leftBackPower = drive + turn - strafe;
-        rightFrontPower = drive - turn - strafe;
-        rightBackPower = drive - turn + strafe;
+        leftFrontPower = drive - turn + strafe;
+        leftBackPower = drive - turn - strafe;
+        rightFrontPower = drive + turn - strafe;
+        rightBackPower = drive + turn + strafe;
 
 
         double divisor = Math.max(Math.max(leftFrontPower, leftBackPower), Math.max(rightFrontPower, rightBackPower));
@@ -204,7 +204,7 @@ public class TeleOpWithArm extends OpMode
             if(armExtender.getTargetPosition() + increment <= 3300) {
                 armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
             }
-            telemetry.addLine("arm go out value: " + armExtender.getTargetPosition());
+
         }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) < -0.3){
             armExtender.setPower(0.4);
             //ok so i changed their speed a little so that they have some more control over it
@@ -212,25 +212,25 @@ public class TeleOpWithArm extends OpMode
             if(armExtender.getTargetPosition() - increment >= 0) {
                 armExtender.setTargetPosition(armExtender.getTargetPosition() - increment);
             }
-            telemetry.addLine("arm go in value: " + armExtender.getTargetPosition());
-        }
 
+        }
+        telemetry.addLine("arm go in/out value: " + armExtender.getTargetPosition());
         if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) > 0.3){
             arm.setPower(0.3);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
             if(arm.getTargetPosition() + increment <= 1225) {
                 arm.setTargetPosition(arm.getTargetPosition() + increment);
             }
-            telemetry.addLine("arm go up value: " + arm.getTargetPosition());
+
         }else if(Range.clip(-gamepad2.right_stick_y, -1.0, 1.0) < -0.3){
             arm.setPower(0.3);
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR ARM!!! MAKE SURE IT DOESN'T BREAK!!!
             if(arm.getTargetPosition() - increment >= 0) {
                 arm.setTargetPosition(arm.getTargetPosition() - increment);
             }
-            telemetry.addLine("arm go down value: " + arm.getTargetPosition());
-        }
 
+        }
+        telemetry.addLine("arm go up/down value: " + arm.getTargetPosition());
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
@@ -248,4 +248,5 @@ public class TeleOpWithArm extends OpMode
     public void stop(){
         
     }
+
 }

@@ -72,7 +72,7 @@ import java.util.List;
  */
 
 @Autonomous(name="Arm Left Blue", group="Robot")
-@Disabled
+//@Disabled
 public class BlueAutoLeftSideArm extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -82,8 +82,8 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
     private DcMotor         rightBackDrive  = null;
     private DcMotor arm = null;
     private DcMotor armExtender = null;
-    private Servo leftClaw = null;
-    private Servo rightClaw = null;
+    private Servo claw = null;
+    //private Servo wrist = null;
 
 
     private ElapsedTime     runtime = new ElapsedTime();
@@ -131,19 +131,16 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
-        leftClaw = hardwareMap.get(Servo.class, "left_claw");
-        rightClaw = hardwareMap.get(Servo.class, "right_claw");
+        claw = hardwareMap.get(Servo.class, "claw");
+        //wrist = hardwareMap.get(Servo.class, "wrist");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         arm.setDirection(DcMotor.Direction.FORWARD);
         armExtender.setDirection(DcMotor.Direction.FORWARD);
@@ -155,8 +152,8 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
         arm.setTargetPosition(0);
         armExtender.setTargetPosition(0);
 
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtender.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -176,27 +173,39 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
                           rightBackDrive.getCurrentPosition());
         telemetry.update();
 
-        initTfod();
+        //initTfod();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        visionPortal.resumeStreaming();
+        //visionPortal.resumeStreaming();
         /*
         Step 1: use the camera to look for the prop
+
+        long time = System.nanoTime();
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        while(System.nanoTime() <= time + 500000000L){
+            currentRecognitions = tfod.getRecognitions();
+        }
+
         Step 2: find where the prop is in the image
+
         Step 3: move to where the prop is, pushing the purple pixel loaded on the robot's front to the spike strip
         Step 3 (alt): use arm to put down purple pixel, if function possible
         Step 4: move to back board (very simple, we start right next to it)
         Step 5: extend arm and drop yellow pixel
         Step 6: retract arm and move to left to park in back zone
          */
-        encoderDrive(STRAFE_SPEED, -48, 48, 48, -48, 3);
-        /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
-        long time = System.nanoTime();
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
-        while(System.nanoTime() <= time + 500000000L){
-            currentRecognitions = tfod.getRecognitions();
-        }
+        encoderDrive(STRAFE_SPEED, -18, 18, 18, -18, 3);
+        encoderDrive(DRIVE_SPEED,10, 10, 10, 10, 2 );
+        encoderDrive(TURN_SPEED, 10, 10, -10, -10, 2);
+        arm.setTargetPosition(826);
+        claw.setPosition(0.5);
+        sleep(3000);
+        encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 3);
+        arm.setTargetPosition(1100);
+        sleep(5000);
+        arm.setTargetPosition(0);
+        /*
         if(currentRecognitions.size() > 0){
             //Left Side
             encoderDrive(STRAFE_SPEED, -2, 2, 2, -2, 1);
@@ -426,14 +435,14 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
 
 
     }
-/*
-    private void moveArm(int increment){
-        armLeft.setPower(0.2);
-        armLeft.setTargetPosition(armLeft.getTargetPosition()-increment);
-        armRight.setPower(0.2);
-        armRight.setTargetPosition(armRight.getTargetPosition()-increment);
-    }
 
+    private void moveArm(int increment){
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(0.3);
+        arm.setTargetPosition(increment);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+/*
     private void intakeIn(){
         claw.setPower(1.0);
     }

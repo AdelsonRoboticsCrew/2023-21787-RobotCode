@@ -79,8 +79,8 @@ public class RedAutoLeftSideArm extends LinearOpMode {
     private DcMotor         rightBackDrive  = null;
     private DcMotor arm = null;
     private DcMotor armExtender = null;
-    private Servo leftClaw = null;
-    private Servo rightClaw = null;
+    private Servo claw = null;
+    private Servo wrist = null;
 
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -123,32 +123,32 @@ public class RedAutoLeftSideArm extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        /*armLeft = hardwareMap.get(DcMotor.class, "arm_left");
-        armRight = hardwareMap.get(DcMotor.class, "arm_right");
-        claw = hardwareMap.get(CRServo.class, "claw");
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
+        claw = hardwareMap.get(Servo.class, "claw");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
-         */
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        /*armLeft.setDirection(DcMotor.Direction.FORWARD);
-        armRight.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.FORWARD);
+        armExtender.setDirection(DcMotor.Direction.FORWARD);
 
-        armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        armLeft.setTargetPosition(0);
-        armRight.setTargetPosition(0);
+        arm.setTargetPosition(0);
+        armExtender.setTargetPosition(0);
 
-        armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-         */
+
 
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

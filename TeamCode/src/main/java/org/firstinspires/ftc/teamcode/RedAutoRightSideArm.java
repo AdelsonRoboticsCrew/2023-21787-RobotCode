@@ -33,8 +33,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -68,9 +68,9 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Arm Right Blue", group="Robot")
+@Autonomous(name="Arm Red Right", group="Robot")
 @Disabled
-public class BlueAutoRightSideArm extends LinearOpMode {
+public class RedAutoRightSideArm extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftFrontDrive   = null;
@@ -79,8 +79,8 @@ public class BlueAutoRightSideArm extends LinearOpMode {
     private DcMotor         rightBackDrive  = null;
     private DcMotor arm = null;
     private DcMotor armExtender = null;
-    private Servo claw = null;
-    private Servo wrist = null;
+    Servo claw = null;
+    Servo wrist = null;
 
 
     private ElapsedTime     runtime = new ElapsedTime();
@@ -95,15 +95,15 @@ public class BlueAutoRightSideArm extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
     static final double     STRAFE_SPEED            = 0.5;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private static final String TFOD_MODEL_ASSET = "BluePropModel.tflite";
+    private static final String TFOD_MODEL_ASSET = "RedPropModel.tflite";
     private static final String[] LABELS = {
-            "BlueProp",
+            "RedProp",
     };
 
 
@@ -111,7 +111,7 @@ public class BlueAutoRightSideArm extends LinearOpMode {
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
-    private TfodProcessor tfod;
+   private TfodProcessor tfod;
 
     /**
      * The variable to store our instance of the vision portal.
@@ -131,6 +131,7 @@ public class BlueAutoRightSideArm extends LinearOpMode {
         claw = hardwareMap.get(Servo.class, "claw");
         wrist = hardwareMap.get(Servo.class, "wrist");
 
+
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -144,12 +145,13 @@ public class BlueAutoRightSideArm extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        //Set to default Positions
         arm.setTargetPosition(0);
         armExtender.setTargetPosition(0);
 
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
 
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -163,10 +165,10 @@ public class BlueAutoRightSideArm extends LinearOpMode {
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Starting at",  "%7d :%7d",
-                leftFrontDrive.getCurrentPosition(),
-                leftBackDrive.getCurrentPosition(),
-                rightFrontDrive.getCurrentPosition(),
-                rightBackDrive.getCurrentPosition());
+                          leftFrontDrive.getCurrentPosition(),
+                          leftBackDrive.getCurrentPosition(),
+                          rightFrontDrive.getCurrentPosition(),
+                          rightBackDrive.getCurrentPosition());
         telemetry.update();
 
         initTfod();
@@ -179,14 +181,11 @@ public class BlueAutoRightSideArm extends LinearOpMode {
         Step 2: find where the prop is in the image
         Step 3: move to where the prop is, pushing the purple pixel loaded on the robot's front to the spike strip
         Step 3 (alt): use arm to put down purple pixel, if function possible
-        *Note* if possible, after putting down purple, could grab a white from the stack
-        Step 4: move to back board (little complicated, door or straight thru depending on robot height
+        Step 4: move to back board (easy, we are right next to it)
         Step 5: extend arm and drop yellow pixel
         Step 6: retract arm and move to right and in to park in back zone
          */
-        encoderDrive(DRIVE_SPEED, 48, 48, 48, 48, 3);
-        encoderDrive(STRAFE_SPEED, -96, 96, 96, -96, 7);
-
+        encoderDrive(STRAFE_SPEED, 48, -48, -48, 4, 3);
         /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();
         List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -200,16 +199,14 @@ public class BlueAutoRightSideArm extends LinearOpMode {
             sleep(500);
             intakeStop();
             encoderDrive(DRIVE_SPEED, -12, -12, -12, -12, 3);
-            encoderDrive(STRAFE_SPEED, 8, -8, -8, 8, 3);
-            encoderDrive(DRIVE_SPEED, 24, 24, 24, 24, 3);
-            encoderDrive(TURN_SPEED, -5, -5, 5, 5, 2);
-            encoderDrive(DRIVE_SPEED, 51, 51, 51, 51, 5);
+            encoderDrive(TURN_SPEED, 5, 5, -5, -5, 3);
+            encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
             encoderDrive(STRAFE_SPEED, -4, 4, 4, -4, 1);
             moveArm(15);
             intakeOut();
             sleep(500);
             intakeStop();
-            encoderDrive(STRAFE_SPEED, -6, 6, 6, -6, 1);
+            encoderDrive(STRAFE_SPEED, 6, -6, -6, 6, 1);
         }else{
             encoderDrive(STRAFE_SPEED,-6,6,6, -6, 1);
             encoderDrive(DRIVE_SPEED, 6, 6, 6, 6,1);
@@ -222,25 +219,20 @@ public class BlueAutoRightSideArm extends LinearOpMode {
                 intakeOut();
                 sleep(500);
                 encoderDrive(DRIVE_SPEED, -6, -6, -6, -6, 2);
-                encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 2);
-                encoderDrive(DRIVE_SPEED, 12,12,12,12,1);
                 encoderDrive(TURN_SPEED, 5, 5, -5, -5, 3);
-                encoderDrive(DRIVE_SPEED, 51, 51, 51, 51, 5);
-                encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 2);
+                encoderDrive(DRIVE_SPEED, 16, 16, 16, 16, 5);
                 moveArm(15);
                 intakeOut();
                 sleep(500);
                 intakeOut();
-                encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 2);
+                encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 2);
             }else{
                 encoderDrive(TURN_SPEED, -5, -5, 5, 5, 1);
                 intakeOut();
                 sleep(500);
                 intakeStop();
-                encoderDrive(DRIVE_SPEED, -12,-12,-12,-12,2);
-                encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 3);
-                encoderDrive(DRIVE_SPEED, 39, 39, 39, 39, 5);
-                encoderDrive(STRAFE_SPEED, -18, 18, 18, -18, 2);
+                encoderDrive(TURN_SPEED, 10, 10, -10, -10, 4);
+                encoderDrive(DRIVE_SPEED, 16,16,16,16,2);
                 intakeOut();
                 sleep(500);
                 intakeOut();
@@ -269,8 +261,8 @@ public class BlueAutoRightSideArm extends LinearOpMode {
         visionPortal.stopStreaming();
         visionPortal.close();
 
-         */
 
+         */
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
@@ -449,5 +441,5 @@ public class BlueAutoRightSideArm extends LinearOpMode {
         claw.setPower(0);
     }
 
-     */
+    */
 }
