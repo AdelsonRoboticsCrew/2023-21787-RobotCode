@@ -197,14 +197,34 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
          */
         encoderDrive(STRAFE_SPEED, -18, 18, 18, -18, 3);
         encoderDrive(DRIVE_SPEED,10, 10, 10, 10, 2 );
-        encoderDrive(TURN_SPEED, 10, 10, -10, -10, 2);
-        arm.setTargetPosition(826);
+        encoderDrive(TURN_SPEED, 11, 11, -11, -11, 2);
+        /*arm.setTargetPosition(826);
         claw.setPosition(0.5);
         sleep(3000);
+         */
+        arm.setPower(0.2);
+        sleep(1800);
+        arm.setPower(0);
+        sleep(500);
+        claw.setPosition(0.4);
+        sleep(500);
+        arm.setPower(-0.2);
+        sleep(1800);
+        arm.setPower(0);
         encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 3);
-        arm.setTargetPosition(1100);
+        arm.setPower(0.2);
+        sleep(2500);
+        arm.setPower(0);
+        sleep(500);
+        claw.setPosition(0.4);
+        sleep(500);
+        arm.setPower(-0.2);
+        sleep(2500);
+        arm.setPower(0);
+        /*arm.setTargetPosition(1100);
         sleep(5000);
         arm.setTargetPosition(0);
+         */
         /*
         if(currentRecognitions.size() > 0){
             //Left Side

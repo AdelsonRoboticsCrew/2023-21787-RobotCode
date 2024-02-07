@@ -136,8 +136,8 @@ public class RedAutoLeftSide extends LinearOpMode {
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         /*armLeft.setDirection(DcMotor.Direction.FORWARD);
         armRight.setDirection(DcMotor.Direction.FORWARD);
@@ -177,8 +177,8 @@ public class RedAutoLeftSide extends LinearOpMode {
         waitForStart();
         //visionPortal.resumeStreaming();
 
-        encoderDrive(DRIVE_SPEED, 48, 48, 48, 48, 3);
-        encoderDrive(STRAFE_SPEED, 96, -96, -96, 96, 7);
+        encoderDrive(DRIVE_SPEED, 24, 24, 24, 24, 3);
+        encoderDrive(STRAFE_SPEED, 48, -48, -48, 48, 7);
         /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();
         List<Recognition> currentRecognitions = tfod.getRecognitions();
