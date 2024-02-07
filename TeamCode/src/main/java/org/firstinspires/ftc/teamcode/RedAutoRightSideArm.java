@@ -69,7 +69,7 @@ import java.util.List;
  */
 
 @Autonomous(name="Arm Red Right", group="Robot")
-@Disabled
+//@Disabled
 public class RedAutoRightSideArm extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -80,7 +80,7 @@ public class RedAutoRightSideArm extends LinearOpMode {
     private DcMotor arm = null;
     private DcMotor armExtender = null;
     Servo claw = null;
-    Servo wrist = null;
+    //Servo wrist = null;
 
 
     private ElapsedTime     runtime = new ElapsedTime();
@@ -111,12 +111,12 @@ public class RedAutoRightSideArm extends LinearOpMode {
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
-   private TfodProcessor tfod;
+   //private TfodProcessor tfod;
 
     /**
      * The variable to store our instance of the vision portal.
      */
-    private VisionPortal visionPortal;
+    //private VisionPortal visionPortal;
 
     @Override
     public void runOpMode() {
@@ -129,7 +129,7 @@ public class RedAutoRightSideArm extends LinearOpMode {
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
         claw = hardwareMap.get(Servo.class, "claw");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        //wrist = hardwareMap.get(Servo.class, "wrist");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -171,11 +171,11 @@ public class RedAutoRightSideArm extends LinearOpMode {
                           rightBackDrive.getCurrentPosition());
         telemetry.update();
 
-        initTfod();
+        //initTfod();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        visionPortal.resumeStreaming();
+        //visionPortal.resumeStreaming();
         /*
         Step 1: use the camera to look for the prop
         Step 2: find where the prop is in the image
@@ -185,7 +185,36 @@ public class RedAutoRightSideArm extends LinearOpMode {
         Step 5: extend arm and drop yellow pixel
         Step 6: retract arm and move to right and in to park in back zone
          */
-        encoderDrive(STRAFE_SPEED, 48, -48, -48, 4, 3);
+        encoderDrive(STRAFE_SPEED, 18, -18, -18, 18, 3);
+        encoderDrive(DRIVE_SPEED,10, 10, 10, 10, 2 );
+        encoderDrive(TURN_SPEED, -11, -11, 11, 11, 2);
+        /*arm.setTargetPosition(826);
+        claw.setPosition(0.5);
+        sleep(3000);
+         */
+        arm.setPower(0.2);
+        sleep(1800);
+        arm.setPower(0);
+        sleep(500);
+        claw.setPosition(0.4);
+        sleep(500);
+        arm.setPower(-0.2);
+        sleep(1800);
+        arm.setPower(0);
+        encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 3);
+        arm.setPower(0.2);
+        sleep(2500);
+        arm.setPower(0);
+        sleep(500);
+        claw.setPosition(0.4);
+        sleep(500);
+        arm.setPower(-0.2);
+        sleep(2500);
+        arm.setPower(0);
+        /*arm.setTargetPosition(1100);
+        sleep(5000);
+        arm.setTargetPosition(0);
+         */
         /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();
         List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -347,7 +376,7 @@ public class RedAutoRightSideArm extends LinearOpMode {
     /**
      * Initialize the TensorFlow Object Detection processor.
      */
-    private void initTfod() {
+    /*private void initTfod() {
 
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
@@ -402,8 +431,8 @@ public class RedAutoRightSideArm extends LinearOpMode {
         //visionPortal.setProcessorEnabled(tfod, true);
 
     }   // end method initTfod()
-
-    private void telemetryTfod() {
+*/
+    /*private void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
@@ -421,6 +450,8 @@ public class RedAutoRightSideArm extends LinearOpMode {
 
 
     }
+
+     */
 /*
     private void moveArm(int increment){
         armLeft.setPower(0.2);

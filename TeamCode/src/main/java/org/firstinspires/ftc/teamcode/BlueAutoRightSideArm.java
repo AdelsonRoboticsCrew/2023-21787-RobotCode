@@ -184,8 +184,32 @@ public class BlueAutoRightSideArm extends LinearOpMode {
         Step 5: extend arm and drop yellow pixel
         Step 6: retract arm and move to right and in to park in back zone
          */
-        encoderDrive(DRIVE_SPEED, 48, 48, 48, 48, 3);
-        encoderDrive(STRAFE_SPEED, -96, 96, 96, -96, 7);
+        encoderDrive(DRIVE_SPEED,12, 12, 12, 12, 3 );
+        encoderDrive(STRAFE_SPEED, -42, 42, 42, -42, 5);
+        encoderDrive(TURN_SPEED, 11, 11, -11, -11, 2);
+        /*arm.setTargetPosition(826);
+        claw.setPosition(0.5);
+        sleep(3000);
+         */
+        arm.setPower(0.2);
+        sleep(1800);
+        arm.setPower(0);
+        sleep(500);
+        claw.setPosition(0.4);
+        sleep(500);
+        arm.setPower(-0.2);
+        sleep(1800);
+        arm.setPower(0);
+        encoderDrive(STRAFE_SPEED, -12, 12, 12, -12, 3);
+        arm.setPower(0.2);
+        sleep(2500);
+        arm.setPower(0);
+        sleep(500);
+        claw.setPosition(0.4);
+        sleep(500);
+        arm.setPower(-0.2);
+        sleep(2500);
+        arm.setPower(0);
 
         /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();

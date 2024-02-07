@@ -183,10 +183,10 @@ public class TeleOpWithArm extends OpMode
 
         if(clawOpen) {
             telemetry.addLine("claw debug open");
-            claw.setPosition(0.5); //find value during testing
+            claw.setPosition(0.0); //find value during testing
         }else{
             telemetry.addLine("claw debug close");
-            claw.setPosition(0.2); //find value during testing
+            claw.setPosition(0.4); //find value during testing
         }
 /*
         if(wristDown){
