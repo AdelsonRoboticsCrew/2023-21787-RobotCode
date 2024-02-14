@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -78,6 +79,10 @@ public class BlueAutoRightSide extends LinearOpMode {
     private DcMotor         leftBackDrive   = null;
     private DcMotor         rightFrontDrive  = null;
     private DcMotor         rightBackDrive  = null;
+    private DcMotor arm = null;
+    private DcMotor armExtender = null;
+    Servo claw = null;
+    Servo initHolder = null;
     /*private DcMotor armLeft = null;
     private DcMotor armRight = null;
     private boolean clawOpen = false;
@@ -128,6 +133,11 @@ public class BlueAutoRightSide extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
+        claw = hardwareMap.get(Servo.class, "claw");
+        initHolder = hardwareMap.get(Servo.class, "initHolder");
+
         /*armLeft = hardwareMap.get(DcMotor.class, "arm_left");
         armRight = hardwareMap.get(DcMotor.class, "arm_right");
         claw = hardwareMap.get(CRServo.class, "claw");
@@ -141,6 +151,20 @@ public class BlueAutoRightSide extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.FORWARD);
+        armExtender.setDirection(DcMotor.Direction.FORWARD);
+
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        arm.setTargetPosition(0);
+        armExtender.setTargetPosition(0);
+
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtender.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         /*armLeft.setDirection(DcMotor.Direction.FORWARD);
         armRight.setDirection(DcMotor.Direction.FORWARD);
 
@@ -178,10 +202,12 @@ public class BlueAutoRightSide extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         //visionPortal.resumeStreaming();
-
+        arm.setPower(0.2);
+        sleep(1900);
         encoderDrive(DRIVE_SPEED, 24, 24, 24, 24, 3);
         encoderDrive(STRAFE_SPEED, -48, 48, 48, -48, 7);
-
+        arm.setPower(-0.2);
+        sleep(1900);
         /*encoderDrive(DRIVE_SPEED, 12, 12, 12, 12, 3);
         long time = System.nanoTime();
         List<Recognition> currentRecognitions = tfod.getRecognitions();

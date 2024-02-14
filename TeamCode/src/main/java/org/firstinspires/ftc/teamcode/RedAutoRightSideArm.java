@@ -148,8 +148,10 @@ public class RedAutoRightSideArm extends LinearOpMode {
         arm.setTargetPosition(0);
         armExtender.setTargetPosition(0);
 
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtender.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
 
 
 
@@ -193,23 +195,23 @@ public class RedAutoRightSideArm extends LinearOpMode {
         sleep(3000);
          */
         arm.setPower(0.2);
-        sleep(1800);
+        sleep(1500);
         arm.setPower(0);
         sleep(500);
         claw.setPosition(0.4);
         sleep(500);
         arm.setPower(-0.2);
-        sleep(1800);
+        sleep(1500);
         arm.setPower(0);
         encoderDrive(STRAFE_SPEED, 12, -12, -12, 12, 3);
         arm.setPower(0.2);
-        sleep(2500);
+        sleep(2000);
         arm.setPower(0);
         sleep(500);
         claw.setPosition(0.4);
         sleep(500);
         arm.setPower(-0.2);
-        sleep(2500);
+        sleep(2000);
         arm.setPower(0);
         /*arm.setTargetPosition(1100);
         sleep(5000);

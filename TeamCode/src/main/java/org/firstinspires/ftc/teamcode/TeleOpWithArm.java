@@ -65,11 +65,12 @@ public class TeleOpWithArm extends OpMode
     private DcMotor arm = null;
     private DcMotor armExtender = null;
     private Servo claw = null;
-    //private Servo wrist = null;
+    private Servo holder = null;
+    private Servo initHolder = null;
     private boolean clawOpen = false;
 
-    //private boolean wristDown = true;
-    //private boolean lastB = false;
+    private boolean holderUp = true;
+    private boolean lastB = false;
     private boolean lastX = false;
 
     /*
@@ -89,7 +90,8 @@ public class TeleOpWithArm extends OpMode
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
         claw = hardwareMap.get(Servo.class, "claw");
-        //wrist = hardwareMap.get(Servo.class, "wrist");
+        holder = hardwareMap.get(Servo.class, "holder");
+        initHolder = hardwareMap.get(Servo.class, "initHolder");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -175,11 +177,11 @@ public class TeleOpWithArm extends OpMode
         if (gamepad2.x && !lastX) {
             clawOpen = !clawOpen;
         }
-        /*if (gamepad2.b && !lastB) {
-            wristDown = !wristDown;
+        if (gamepad2.b && !lastB) {
+            holderUp = !holderUp;
         }
 
-         */
+
 
         if(clawOpen) {
             telemetry.addLine("claw debug open");
@@ -188,25 +190,27 @@ public class TeleOpWithArm extends OpMode
             telemetry.addLine("claw debug close");
             claw.setPosition(0.4); //find value during testing
         }
-/*
-        if(wristDown){
-            telemetry.addLine("wrist debug down");
-            wrist.setPosition(0.8);
+
+        if(holderUp){
+            telemetry.addLine("holder debug up");
+            holder.setPosition(1.0);
         }else{
-            telemetry.addLine("wrist debug up");
-            wrist.setPosition(0.0);
+            telemetry.addLine("holder debug down");
+            holder.setPosition(0.4);
         }
-*/
+
+        initHolder.setPosition(0.5);
+
         int increment = 2;
         if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) > 0.3){
-            armExtender.setPower(0.4);
+            armExtender.setPower(0.8);
             //3620 limit
             if(armExtender.getTargetPosition() + increment <= 3300) {
                 armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
             }
 
         }else if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) < -0.3){
-            armExtender.setPower(0.4);
+            armExtender.setPower(0.8);
             //ok so i changed their speed a little so that they have some more control over it
             //IMPORTANT!!! FIND A LIMIT NUMBER FOR EXTENDER!!! MAKE SURE IT DOESN'T BREAK!!!
             if(armExtender.getTargetPosition() - increment >= 0) {
@@ -236,7 +240,7 @@ public class TeleOpWithArm extends OpMode
         telemetry.addData("Motors", "left front (%.2f), left back (%.2f), right front (%.2f), right back (%.2f)", leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
 
         lastX = gamepad2.x;
-        //lastB = gamepad2.b;
+        lastB = gamepad2.b;
     }
 
     /*
