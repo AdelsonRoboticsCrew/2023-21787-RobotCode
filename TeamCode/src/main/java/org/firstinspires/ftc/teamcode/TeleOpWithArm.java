@@ -203,8 +203,13 @@ public class TeleOpWithArm extends OpMode
 
         int increment = 2;
         if(Range.clip(-gamepad2.left_stick_y, -1.0, 1.0) > 0.3){
+<<<<<<< HEAD
             armExtender.setPower(0.8);
             //3620 limit
+=======
+            armExtender.setPower(0.4);
+            //3300 limit
+>>>>>>> a4da843f5ce1237e9600461063fa7e7d70ea3f45
             if(armExtender.getTargetPosition() + increment <= 3300) {
                 armExtender.setTargetPosition(armExtender.getTargetPosition() + increment);
             }
