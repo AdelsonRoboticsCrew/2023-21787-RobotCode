@@ -83,7 +83,9 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
     private DcMotor arm = null;
     private DcMotor armExtender = null;
     private Servo claw = null;
+
     //private Servo wrist = null;
+
 
 
     private ElapsedTime     runtime = new ElapsedTime();
@@ -132,7 +134,9 @@ public class BlueAutoLeftSideArm extends LinearOpMode {
         arm = hardwareMap.get(DcMotor.class, "arm");
         armExtender = hardwareMap.get(DcMotor.class, "arm_extender");
         claw = hardwareMap.get(Servo.class, "claw");
+
         //wrist = hardwareMap.get(Servo.class, "wrist");
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
